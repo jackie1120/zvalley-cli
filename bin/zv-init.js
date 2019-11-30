@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const fs = require('fs')
 const program = require('commander')
+const Project = require('../dist/project.js').default
 const chalk = require('chalk')
 const ora = require('ora')
 const download = require('download-git-repo')
@@ -10,7 +11,10 @@ const tplObj = require(`${__dirname}/../template`)
 const inquirer = require('inquirer')
 
 program
-  .usage('[options] <project-name>')
+  .option('--name [name]', '项目名称')
+  .option('--description [description]', '项目介绍')
+  .option('--template-source [templateSource]', '项目模板源')
+  .option('--clone [clone]', '拉取远程模板时使用git clone')
   .on('--help', () => {
     console.log('Example:')
     console.log('  创建一个默认的项目')
@@ -20,30 +24,31 @@ program
   })
 program.parse(process.argv)
 
-let projectName
-let option
-if (program.args.length < 1 || program.args.length > 2) {
+// if (program.args.length < 1) {
+//   return program.help()
+// } 
 
-  return program.help()
-} else if (program.args.length === 1) {
+const args = program.args
+const { name, template, templateSource, clone, description, css } = program
 
-  projectName = program.args[0]
-  if (!verifyProjectName(projectName)) { return }
-} else {
+const projectName = args[0] || name
 
-  option = program.args[0]
-  if (option !== 'd') {
+const project = new Project({
+  projectName,
+  projectDir: process.cwd(),
+  templateSource,
+  clone,
+  template,
+  description,
+  css
+})
 
-    return program.help()
-  } else {
+project.create()
 
-    option = program.args[0]
-    projectName = program.args[1]
-    if (!verifyProjectName(projectName)) { return }
-  }
-}
+/*
+if (!verifyProjectName(projectName)) { return }
 
-option === 'd' ? downloadTemplate() : chooseTemplate()
+template === 'default' ? downloadTemplate() : chooseTemplate()
 
 function chooseTemplate() {
   // 自定义交互式命令行的问题及简单的校验
@@ -53,15 +58,12 @@ function chooseTemplate() {
       type: 'list',
       message: "请选择模板",
       choices: [
+        "default",
         "移动端",
+        "移动端门户开发",
         "PC端",
         "多页应用"
       ]
-    },
-    {
-      type: "confirm",
-      message: "是否使用多语言?",
-      name: "locale"
     }
   ]
 
@@ -69,7 +71,7 @@ function chooseTemplate() {
     .prompt(question).then(answers => {
 
     // answers 就是用户输入的内容，是个对象
-    let { type, locale } = answers
+    let { type } = answers
 
     downloadTemplate(type)
   })
@@ -119,3 +121,4 @@ function verifyProjectName(projectName) {
 
   return true
 }
+*/
