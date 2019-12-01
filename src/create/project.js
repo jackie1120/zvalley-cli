@@ -81,7 +81,7 @@ export default class Project extends Creator {
             prompts.push({
             type: 'confirm',
             name: 'autoInstall',
-            message: '是否上传至远程Git仓库 ？'
+            message: '是否自动安装项目依赖包 ？'
             })
         };
         this.askPush = function (conf, prompts) {
@@ -90,6 +90,15 @@ export default class Project extends Creator {
             name: 'gitPush',
             message: '是否上传至远程Git仓库 ？'
             })
+        };
+        this.askGitAddress = function (conf, prompts) {
+            if (typeof conf.gitAddress !== 'string') {
+                prompts.push({
+                    type: 'input',
+                    name: 'gitAddress',
+                    message: '请输入远程仓库地址！'
+                });
+            }
         };
           
         const unSupportedVer = semver.lt(process.version, 'v7.6.0');
@@ -101,7 +110,8 @@ export default class Project extends Creator {
             projectName: '',
             projectDir: '',
             template: '',
-            description: ''
+            description: '',
+            gitAddress: ''
         }, options);
     }
 
@@ -112,24 +122,48 @@ export default class Project extends Creator {
     }
 
     create() {
+        // createApp(new Creator(), this.conf)
         this.ask()
             .then(answers => {
                 const date = new Date();
                 this.conf = Object.assign(this.conf, answers);
-                this.conf.date = `${date.getFullYear()}-${(date.getMonth() + 1)}-${date.getDate()}`;
-                this.fetchTemplates(this.conf.template, this.conf.projectName)
-                    .then(() => {
-                        const from = `${this.conf.projectName}/package.json`
-                        const creator = this.template(from, from, { name: this.conf.projectName, description: this.conf.description })
-                        createApp(creator, this.conf)
+                if (this.conf.gitPush) {
+                    inquirer.prompt([{
+                        type: 'input',
+                        name: 'gitAddress',
+                        message: '请输入远程仓库地址！'
+                    }]).then(answers => {
+                        this.conf = Object.assign(this.conf, answers);
+
+                        this.conf.date = `${date.getFullYear()}-${(date.getMonth() + 1)}-${date.getDate()}`;
+                        this.fetchTemplates(this.conf.template, this.conf.projectName)
+                            .then(() => {
+                                const from = `${this.conf.projectName}/package.json`
+                                const creator = this.template(from, from, { name: this.conf.projectName, description: this.conf.description })
+                                createApp(creator, this.conf)
+                            })
+                            .catch(err => console.log(chalk.red('创建项目失败: ', err)));
                     })
-                    .catch(err => console.log(chalk.red('创建项目失败: ', err)));
+                } else {
+                    this.conf.date = `${date.getFullYear()}-${(date.getMonth() + 1)}-${date.getDate()}`;
+                    this.fetchTemplates(this.conf.template, this.conf.projectName)
+                        .then(() => {
+                            const from = `${this.conf.projectName}/package.json`
+                            const creator = this.template(from, from, { name: this.conf.projectName, description: this.conf.description })
+                            createApp(creator, this.conf)
+                        })
+                        .catch(err => console.log(chalk.red('创建项目失败: ', err)));
+                }
             })
             
     }
 
     fetchTemplates(template, projectName) {
-        const url = `122687220/web-template#${encodeURI(template)}`
+        let url = `122687220/web-template#${encodeURI(template)}`
+        if (template === 'default') {
+            url = '122687220/web-template'
+        }
+        
         const filePath = this.templatePath(projectName)
 
         // 从模板源下载模板122687220/web-template

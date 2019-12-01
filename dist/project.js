@@ -122,7 +122,7 @@ var Project = function (_Creator) {
             prompts.push({
                 type: 'confirm',
                 name: 'autoInstall',
-                message: '是否上传至远程Git仓库 ？'
+                message: '是否自动安装项目依赖包 ？'
             });
         };
         _this.askPush = function (conf, prompts) {
@@ -131,6 +131,15 @@ var Project = function (_Creator) {
                 name: 'gitPush',
                 message: '是否上传至远程Git仓库 ？'
             });
+        };
+        _this.askGitAddress = function (conf, prompts) {
+            if (typeof conf.gitAddress !== 'string') {
+                prompts.push({
+                    type: 'input',
+                    name: 'gitAddress',
+                    message: '请输入远程仓库地址！'
+                });
+            }
         };
 
         var unSupportedVer = _semver2.default.lt(process.version, 'v7.6.0');
@@ -142,7 +151,8 @@ var Project = function (_Creator) {
             projectName: '',
             projectDir: '',
             template: '',
-            description: ''
+            description: '',
+            gitAddress: ''
         }, options);
         return _this;
     }
@@ -159,23 +169,47 @@ var Project = function (_Creator) {
         value: function create() {
             var _this2 = this;
 
+            // createApp(new Creator(), this.conf)
             this.ask().then(function (answers) {
                 var date = new Date();
                 _this2.conf = Object.assign(_this2.conf, answers);
-                _this2.conf.date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-                _this2.fetchTemplates(_this2.conf.template, _this2.conf.projectName).then(function () {
-                    var from = _this2.conf.projectName + '/package.json';
-                    var creator = _this2.template(from, from, { name: _this2.conf.projectName, description: _this2.conf.description });
-                    (0, _init2.default)(creator, _this2.conf);
-                }).catch(function (err) {
-                    return console.log(_chalk2.default.red('创建项目失败: ', err));
-                });
+                if (_this2.conf.gitPush) {
+                    _inquirer2.default.prompt([{
+                        type: 'input',
+                        name: 'gitAddress',
+                        message: '请输入远程仓库地址！'
+                    }]).then(function (answers) {
+                        _this2.conf = Object.assign(_this2.conf, answers);
+
+                        _this2.conf.date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+                        _this2.fetchTemplates(_this2.conf.template, _this2.conf.projectName).then(function () {
+                            var from = _this2.conf.projectName + '/package.json';
+                            var creator = _this2.template(from, from, { name: _this2.conf.projectName, description: _this2.conf.description });
+                            (0, _init2.default)(creator, _this2.conf);
+                        }).catch(function (err) {
+                            return console.log(_chalk2.default.red('创建项目失败: ', err));
+                        });
+                    });
+                } else {
+                    _this2.conf.date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+                    _this2.fetchTemplates(_this2.conf.template, _this2.conf.projectName).then(function () {
+                        var from = _this2.conf.projectName + '/package.json';
+                        var creator = _this2.template(from, from, { name: _this2.conf.projectName, description: _this2.conf.description });
+                        (0, _init2.default)(creator, _this2.conf);
+                    }).catch(function (err) {
+                        return console.log(_chalk2.default.red('创建项目失败: ', err));
+                    });
+                }
             });
         }
     }, {
         key: 'fetchTemplates',
         value: function fetchTemplates(template, projectName) {
             var url = '122687220/web-template#' + encodeURI(template);
+            if (template === 'default') {
+                url = '122687220/web-template';
+            }
+
             var filePath = this.templatePath(projectName);
 
             // 从模板源下载模板122687220/web-template
