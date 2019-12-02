@@ -37,6 +37,14 @@ export default class Creator {
         return this
     }
 
+    copyTemplate(from, to) {
+        const rootPath = this.getRootPath()
+        const fromPath = path.join(rootPath, from)
+        const toPath = this.templatePath(to)
+        fs.mkdirSync(toPath);
+        this.fs.copy(fromPath, toPath)
+    }
+
     writeGitKeepFile(dirname) {
         dirname = path.resolve(dirname);
         fs.writeFileSync(path.join(dirname, '.gitkeep'), 'Place hold file', 'utf8');

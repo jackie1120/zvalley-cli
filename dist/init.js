@@ -77,19 +77,13 @@ function createApp(creater, params, cb) {
         _shelljs2.default.exec('git add .');
         _shelljs2.default.exec('git commit -m "first commit"');
         _shelljs2.default.exec('git remote add origin ' + gitAddress);
-        var res = _shelljs2.default.exec('git pull --rebase origin master');
+        var res = _shelljs2.default.exec('git push -u origin master');
         if (res.code !== 0) {
           gitSpinner.color = 'red';
           gitSpinner.fail(_chalk2.default.red('上传Git仓库失败，请自行上传！'));
         } else {
-          var res1 = _shelljs2.default.exec('git push -u origin master');
-          if (res1.code !== 0) {
-            gitSpinner.color = 'red';
-            gitSpinner.fail(_chalk2.default.red('上传Git仓库失败，请自行上传！'));
-          } else {
-            gitSpinner.color = 'green';
-            gitSpinner.succeed('上传Git仓库成功');
-          }
+          gitSpinner.color = 'green';
+          gitSpinner.succeed('上传Git仓库成功');
         }
       } catch (error) {
         gitSpinner.color = 'red';

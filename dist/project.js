@@ -100,8 +100,8 @@ var Project = function (_Creator) {
                 name: '移动端',
                 value: '移动端'
             }, {
-                name: '移动端门户开发',
-                value: '移动端门户开发'
+                name: '移动端-门户开发',
+                value: '移动端-门户开发'
             }, {
                 name: 'PC端',
                 value: 'PC端'
@@ -132,14 +132,28 @@ var Project = function (_Creator) {
                 message: '是否上传至远程Git仓库 ？'
             });
         };
-        _this.askGitAddress = function (conf, prompts) {
-            if (typeof conf.gitAddress !== 'string') {
-                prompts.push({
-                    type: 'input',
-                    name: 'gitAddress',
-                    message: '请输入远程仓库地址！'
-                });
-            }
+        _this.askGitAddress = function (prompts) {
+            prompts.push({
+                type: 'input',
+                name: 'gitAddress',
+                message: '请输入远程仓库地址！',
+                validate: function validate(input) {
+                    if (!input) {
+                        return '仓库地址不能为空！';
+                    }
+                    if (!/^http:/.test(input) && !/^https:/.test(input)) {
+                        return '仓库地址必须以https或者http开头！';
+                    }
+                    return true;
+                }
+            });
+        };
+        _this.askLang = function (prompts) {
+            prompts.push({
+                type: 'confirm',
+                name: 'lang',
+                message: '是否添加国际化包 ？'
+            });
         };
 
         var unSupportedVer = _semver2.default.lt(process.version, 'v7.6.0');
@@ -152,7 +166,8 @@ var Project = function (_Creator) {
             projectDir: '',
             template: '',
             description: '',
-            gitAddress: ''
+            gitAddress: '',
+            lang: false
         }, options);
         return _this;
     }
@@ -174,17 +189,20 @@ var Project = function (_Creator) {
                 var date = new Date();
                 _this2.conf = Object.assign(_this2.conf, answers);
                 if (_this2.conf.gitPush) {
-                    _inquirer2.default.prompt([{
-                        type: 'input',
-                        name: 'gitAddress',
-                        message: '请输入远程仓库地址！'
-                    }]).then(function (answers) {
+                    _this2.askNext(_this2.conf).then(function (answers) {
                         _this2.conf = Object.assign(_this2.conf, answers);
 
                         _this2.conf.date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
                         _this2.fetchTemplates(_this2.conf.template, _this2.conf.projectName).then(function () {
                             var from = _this2.conf.projectName + '/package.json';
                             var creator = _this2.template(from, from, { name: _this2.conf.projectName, description: _this2.conf.description });
+
+                            var fromHTML = _this2.conf.projectName + '/public/index.html';
+                            var creatorHTML = _this2.template(fromHTML, fromHTML, { title: _this2.conf.projectName });
+                            creatorHTML.fs.commit(function () {});
+                            if (_this2.conf.lang) {
+                                _this2.copyTemplate('templates/lang', _this2.conf.projectName + '/src/lang');
+                            }
                             (0, _init2.default)(creator, _this2.conf);
                         }).catch(function (err) {
                             return console.log(_chalk2.default.red('创建项目失败: ', err));
@@ -225,6 +243,16 @@ var Project = function (_Creator) {
             this.askTemplate(conf, prompts);
             this.askInstall(conf, prompts);
             this.askPush(conf, prompts);
+            return _inquirer2.default.prompt(prompts);
+        }
+    }, {
+        key: 'askNext',
+        value: function askNext(conf) {
+            var prompts = [];
+            this.askGitAddress(prompts);
+            if (conf.template === 'default' || conf.template === '移动端') {
+                this.askLang(prompts);
+            }
             return _inquirer2.default.prompt(prompts);
         }
     }]);

@@ -59,19 +59,13 @@ export default function createApp (
           shell.exec('git add .')
           shell.exec('git commit -m "first commit"')
           shell.exec(`git remote add origin ${gitAddress}`)
-          const res = shell.exec('git pull --rebase origin master')
+          const res = shell.exec('git push -u origin master')
           if (res.code !== 0) {
             gitSpinner.color = 'red'
             gitSpinner.fail(chalk.red('上传Git仓库失败，请自行上传！'))
           } else {
-            const res1 = shell.exec('git push -u origin master')
-            if (res1.code !== 0) {
-              gitSpinner.color = 'red'
-              gitSpinner.fail(chalk.red('上传Git仓库失败，请自行上传！'))
-            } else {
-              gitSpinner.color = 'green'
-              gitSpinner.succeed('上传Git仓库成功')
-            }
+            gitSpinner.color = 'green'
+            gitSpinner.succeed('上传Git仓库成功')
           }
         } catch (error) {
           gitSpinner.color = 'red'

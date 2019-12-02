@@ -59,8 +59,8 @@ export default class Project extends Creator {
                     name: '移动端',
                     value: '移动端'
                 },{
-                    name: '移动端门户开发',
-                    value: '移动端门户开发'
+                    name: '移动端-门户开发',
+                    value: '移动端-门户开发'
                 },{
                     name: 'PC端',
                     value: 'PC端'
@@ -91,14 +91,28 @@ export default class Project extends Creator {
             message: '是否上传至远程Git仓库 ？'
             })
         };
-        this.askGitAddress = function (conf, prompts) {
-            if (typeof conf.gitAddress !== 'string') {
-                prompts.push({
-                    type: 'input',
-                    name: 'gitAddress',
-                    message: '请输入远程仓库地址！'
-                });
-            }
+        this.askGitAddress = function (prompts) {
+            prompts.push({
+                type: 'input',
+                name: 'gitAddress',
+                message: '请输入远程仓库地址！',
+                validate(input) {
+                    if (!input) {
+                        return '仓库地址不能为空！';
+                    }
+                    if (!/^http:/.test(input) && !/^https:/.test(input)) {
+                        return '仓库地址必须以https或者http开头！'
+                    }
+                    return true;
+                }
+            })
+        };
+        this.askLang = function (prompts) {
+            prompts.push({
+            type: 'confirm',
+            name: 'lang',
+            message: '是否添加国际化包 ？'
+            })
         };
           
         const unSupportedVer = semver.lt(process.version, 'v7.6.0');
@@ -111,7 +125,8 @@ export default class Project extends Creator {
             projectDir: '',
             template: '',
             description: '',
-            gitAddress: ''
+            gitAddress: '',
+            lang: false
         }, options);
     }
 
@@ -128,11 +143,7 @@ export default class Project extends Creator {
                 const date = new Date();
                 this.conf = Object.assign(this.conf, answers);
                 if (this.conf.gitPush) {
-                    inquirer.prompt([{
-                        type: 'input',
-                        name: 'gitAddress',
-                        message: '请输入远程仓库地址！'
-                    }]).then(answers => {
+                    this.askNext(this.conf).then(answers => {
                         this.conf = Object.assign(this.conf, answers);
 
                         this.conf.date = `${date.getFullYear()}-${(date.getMonth() + 1)}-${date.getDate()}`;
@@ -140,6 +151,13 @@ export default class Project extends Creator {
                             .then(() => {
                                 const from = `${this.conf.projectName}/package.json`
                                 const creator = this.template(from, from, { name: this.conf.projectName, description: this.conf.description })
+
+                                // const fromHTML = `${this.conf.projectName}/public/index.html`
+                                // const creatorHTML = this.template(fromHTML, fromHTML, { title: this.conf.projectName })
+                                // creatorHTML.fs.commit(() => {})
+                                if (this.conf.lang) {
+                                    this.copyTemplate('templates/lang', `${this.conf.projectName}/src/lang`)
+                                }
                                 createApp(creator, this.conf)
                             })
                             .catch(err => console.log(chalk.red('创建项目失败: ', err)));
@@ -178,6 +196,14 @@ export default class Project extends Creator {
         this.askTemplate(conf, prompts);
         this.askInstall(conf, prompts);
         this.askPush(conf, prompts);
+        return inquirer.prompt(prompts);
+    }
+    askNext(conf) {
+        const prompts = [];
+        this.askGitAddress(prompts)
+        if (conf.template === 'default' || conf.template === '移动端' ) {
+            this.askLang(prompts)
+        }
         return inquirer.prompt(prompts);
     }
 }

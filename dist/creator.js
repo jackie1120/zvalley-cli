@@ -71,6 +71,15 @@ var Creator = function () {
             return this;
         }
     }, {
+        key: 'copyTemplate',
+        value: function copyTemplate(from, to) {
+            var rootPath = this.getRootPath();
+            var fromPath = _path2.default.join(rootPath, from);
+            var toPath = this.templatePath(to);
+            _fsExtra2.default.mkdirSync(toPath);
+            this.fs.copy(fromPath, toPath);
+        }
+    }, {
         key: 'writeGitKeepFile',
         value: function writeGitKeepFile(dirname) {
             dirname = _path2.default.resolve(dirname);
