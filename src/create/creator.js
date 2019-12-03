@@ -23,17 +23,20 @@ export default class Creator {
         return path.resolve(__dirname, '../');
     }
     
-    template(from, to, data) {
-        const fromPath = this.templatePath(from)
-        const toPath = this.templatePath(to)
+    template(list) {
+        list.forEach(item => {
+            const { from, to, data } = item
 
-        if (!fs.existsSync(fromPath)) {
-            console.log(chalk.red('模板路径不存在'))
-            return
-        }
+            const fromPath = this.templatePath(from)
+            const toPath = this.templatePath(to)
 
-        this.fs.copyTpl(fromPath, toPath, data)
-        // this.fs.commit(() => {})
+            if (!fs.existsSync(fromPath)) {
+                console.log(chalk.red(`${fromPath}模板路径不存在`))
+            } else {
+                this.fs.copyTpl(fromPath, toPath, data)
+            }
+        })
+
         return this
     }
 

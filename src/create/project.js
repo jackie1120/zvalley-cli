@@ -114,7 +114,7 @@ export default class Project extends Creator {
             message: '是否添加国际化包 ？'
             })
         };
-          
+
         const unSupportedVer = semver.lt(process.version, 'v7.6.0');
         if (unSupportedVer) {
             throw new Error('Node.js 版本过低，推荐升级 Node.js 至 v8.0.0+');
@@ -137,43 +137,51 @@ export default class Project extends Creator {
     }
 
     create() {
-        // createApp(new Creator(), this.conf)
         this.ask()
             .then(answers => {
-                const date = new Date();
                 this.conf = Object.assign(this.conf, answers);
-                if (this.conf.gitPush) {
-                    this.askNext(this.conf).then(answers => {
-                        this.conf = Object.assign(this.conf, answers);
-
-                        this.conf.date = `${date.getFullYear()}-${(date.getMonth() + 1)}-${date.getDate()}`;
-                        this.fetchTemplates(this.conf.template, this.conf.projectName)
-                            .then(() => {
-                                const from = `${this.conf.projectName}/package.json`
-                                const creator = this.template(from, from, { name: this.conf.projectName, description: this.conf.description })
-
-                                // const fromHTML = `${this.conf.projectName}/public/index.html`
-                                // const creatorHTML = this.template(fromHTML, fromHTML, { title: this.conf.projectName })
-                                // creatorHTML.fs.commit(() => {})
-                                if (this.conf.lang) {
-                                    this.copyTemplate('templates/lang', `${this.conf.projectName}/src/lang`)
-                                }
-                                createApp(creator, this.conf)
-                            })
-                            .catch(err => console.log(chalk.red('创建项目失败: ', err)));
-                    })
-                } else {
-                    this.conf.date = `${date.getFullYear()}-${(date.getMonth() + 1)}-${date.getDate()}`;
+                this.askNext(this.conf).then(answers => {
+                    this.conf = Object.assign(this.conf, answers);
                     this.fetchTemplates(this.conf.template, this.conf.projectName)
                         .then(() => {
-                            const from = `${this.conf.projectName}/package.json`
-                            const creator = this.template(from, from, { name: this.conf.projectName, description: this.conf.description })
+                            // copy国际化文件包
+                            if (this.conf.lang) {
+                                this.copyTemplate('templates/lang', `${this.conf.projectName}/src/lang`)
+                            }
+
+                            // 为各文件添加模板代码
+                            let list = [
+                                {
+                                    from: `${this.conf.projectName}/package.json`,
+                                    to: `${this.conf.projectName}/package.json`,
+                                    data: { name: this.conf.projectName, description: this.conf.description, lang: this.conf.lang }
+                                }, {
+                                    from: `${this.conf.projectName}/public/index.html`,
+                                    to: `${this.conf.projectName}/public/index.html`,
+                                    data: { title: this.conf.projectName }
+                                }
+                            ]
+
+                            if (this.conf.template === 'default' || this.conf.template === '移动端' ) {
+                                list = list.concat([
+                                    {
+                                        from: `${this.conf.projectName}/src/main.js`,
+                                        to: `${this.conf.projectName}/src/main.js`,
+                                        data: { lang: this.conf.lang }
+                                    }, {
+                                        from: `${this.conf.projectName}/src/views/Home.vue`,
+                                        to: `${this.conf.projectName}/src/views/Home.vue`,
+                                        data: { lang: this.conf.lang }
+                                    }
+                                ])
+                            }
+                            const creator = this.template(list)
+
                             createApp(creator, this.conf)
                         })
                         .catch(err => console.log(chalk.red('创建项目失败: ', err)));
-                }
+                })
             })
-            
     }
 
     fetchTemplates(template, projectName) {
@@ -200,7 +208,9 @@ export default class Project extends Creator {
     }
     askNext(conf) {
         const prompts = [];
-        this.askGitAddress(prompts)
+        if (conf.gitPush) {
+            this.askGitAddress(prompts)
+        }
         if (conf.template === 'default' || conf.template === '移动端' ) {
             this.askLang(prompts)
         }

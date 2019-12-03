@@ -184,40 +184,45 @@ var Project = function (_Creator) {
         value: function create() {
             var _this2 = this;
 
-            // createApp(new Creator(), this.conf)
             this.ask().then(function (answers) {
-                var date = new Date();
                 _this2.conf = Object.assign(_this2.conf, answers);
-                if (_this2.conf.gitPush) {
-                    _this2.askNext(_this2.conf).then(function (answers) {
-                        _this2.conf = Object.assign(_this2.conf, answers);
-
-                        _this2.conf.date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-                        _this2.fetchTemplates(_this2.conf.template, _this2.conf.projectName).then(function () {
-                            var from = _this2.conf.projectName + '/package.json';
-                            var creator = _this2.template(from, from, { name: _this2.conf.projectName, description: _this2.conf.description });
-
-                            var fromHTML = _this2.conf.projectName + '/public/index.html';
-                            var creatorHTML = _this2.template(fromHTML, fromHTML, { title: _this2.conf.projectName });
-                            creatorHTML.fs.commit(function () {});
-                            if (_this2.conf.lang) {
-                                _this2.copyTemplate('templates/lang', _this2.conf.projectName + '/src/lang');
-                            }
-                            (0, _init2.default)(creator, _this2.conf);
-                        }).catch(function (err) {
-                            return console.log(_chalk2.default.red('创建项目失败: ', err));
-                        });
-                    });
-                } else {
-                    _this2.conf.date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+                _this2.askNext(_this2.conf).then(function (answers) {
+                    _this2.conf = Object.assign(_this2.conf, answers);
                     _this2.fetchTemplates(_this2.conf.template, _this2.conf.projectName).then(function () {
-                        var from = _this2.conf.projectName + '/package.json';
-                        var creator = _this2.template(from, from, { name: _this2.conf.projectName, description: _this2.conf.description });
+                        // copy国际化文件包
+                        if (_this2.conf.lang) {
+                            _this2.copyTemplate('templates/lang', _this2.conf.projectName + '/src/lang');
+                        }
+
+                        // 为各文件添加模板代码
+                        var list = [{
+                            from: _this2.conf.projectName + '/package.json',
+                            to: _this2.conf.projectName + '/package.json',
+                            data: { name: _this2.conf.projectName, description: _this2.conf.description, lang: _this2.conf.lang }
+                        }, {
+                            from: _this2.conf.projectName + '/public/index.html',
+                            to: _this2.conf.projectName + '/public/index.html',
+                            data: { title: _this2.conf.projectName }
+                        }];
+
+                        if (_this2.conf.template === 'default' || _this2.conf.template === '移动端') {
+                            list = list.concat([{
+                                from: _this2.conf.projectName + '/src/main.js',
+                                to: _this2.conf.projectName + '/src/main.js',
+                                data: { lang: _this2.conf.lang }
+                            }, {
+                                from: _this2.conf.projectName + '/src/views/Home.vue',
+                                to: _this2.conf.projectName + '/src/views/Home.vue',
+                                data: { lang: _this2.conf.lang }
+                            }]);
+                        }
+                        var creator = _this2.template(list);
+
                         (0, _init2.default)(creator, _this2.conf);
                     }).catch(function (err) {
                         return console.log(_chalk2.default.red('创建项目失败: ', err));
                     });
-                }
+                });
             });
         }
     }, {
@@ -249,7 +254,9 @@ var Project = function (_Creator) {
         key: 'askNext',
         value: function askNext(conf) {
             var prompts = [];
-            this.askGitAddress(prompts);
+            if (conf.gitPush) {
+                this.askGitAddress(prompts);
+            }
             if (conf.template === 'default' || conf.template === '移动端') {
                 this.askLang(prompts);
             }

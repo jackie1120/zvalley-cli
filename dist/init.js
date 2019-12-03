@@ -23,6 +23,8 @@ var _shelljs = require('shelljs');
 
 var _shelljs2 = _interopRequireDefault(_shelljs);
 
+var _handlebars = require('handlebars');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function createApp(creater, params, cb) {
@@ -31,7 +33,9 @@ function createApp(creater, params, cb) {
       autoInstall = _params$autoInstall === undefined ? true : _params$autoInstall,
       _params$gitPush = params.gitPush,
       gitPush = _params$gitPush === undefined ? false : _params$gitPush,
-      gitAddress = params.gitAddress;
+      gitAddress = params.gitAddress,
+      template = params.template,
+      lang = params.lang;
 
   // path
 
@@ -63,7 +67,7 @@ function createApp(creater, params, cb) {
       console.log(_chalk2.default.green('\u8BF7\u8FDB\u5165\u9879\u76EE\u76EE\u5F55 ' + _chalk2.default.green.bold(projectName) + ' \u5F00\u59CB\u5DE5\u4F5C\u5427\uFF01\uD83D\uDE1D'));
       console.log('\n To get started');
       console.log('\n    cd ' + projectName);
-      console.log('      npm run serve \n');
+      console.log('    npm run serve \n');
       if (typeof cb === 'function') {
         cb();
       }
@@ -113,7 +117,11 @@ function createApp(creater, params, cb) {
       // packages install
       var installSpinner = (0, _ora2.default)('\u6267\u884C\u5B89\u88C5\u9879\u76EE\u4F9D\u8D56 ' + _chalk2.default.cyan.bold('npm install') + ', \u9700\u8981\u4E00\u4F1A\u513F...').start();
       process.chdir(projectPath);
-      (0, _child_process.exec)('npm install', function (error, stdout, stderr) {
+      var src = 'npm install';
+      if (lang) {
+        src = 'npm install && cd src/lang && npm install';
+      }
+      (0, _child_process.exec)(src, function (error, stdout, stderr) {
         if (error) {
           installSpinner.color = 'red';
           installSpinner.fail(_chalk2.default.red('安装项目依赖失败，请自行重新安装！'));
@@ -141,69 +149,71 @@ function createApp(creater, params, cb) {
     };
 
     if (autoInstall) {
-      /**
-       * 判断nrm是否存在，若存在，则判断是否注册了私有源
-       */
-      if (shouldUseNrm) {
-        (0, _child_process.exec)('nrm ls', function (error, stdout, stderr) {
-          if (error) {
-            callSuccess();
-          } else {
-            var registers = ('' + stdout).split(/\n/);
-
-            var dic = {
-              exist: false,
-              current: false
-            };
-
-            registers.forEach(function (item) {
-              if (item.indexOf('http://registry.lhanyun.com/') !== -1) {
-                dic.exist = true;
-                if (item.indexOf('*') !== -1) {
-                  dic.current = true;
-                }
-              }
-            });
-
-            var err = void 0;
-            var nrmSpinner1 = (0, _ora2.default)('\u6B63\u5728\u8BBE\u7F6Enpm\u6E90').start();
-            try {
-              if (!dic.exist) {
-                _shelljs2.default.exec('nrm add zv http://registry.lhanyun.com/');
-                _shelljs2.default.exec('nrm use zv');
-              } else if (!dic.current) {
-                _shelljs2.default.exec('nrm use zv');
-              }
-              nrmSpinner1.color = 'green';
-              nrmSpinner1.succeed('' + _chalk2.default.grey('npm源设置成功！'));
-            } catch (error) {
-              err = error;
-              nrmSpinner1.color = 'red';
-              nrmSpinner1.fail(_chalk2.default.red('npm源设置失败，请自行设置并重新安装！'));
-
+      if (template === 'PC端' || template === '移动端-门户开发') {
+        // 判断nrm是否存在，若存在，则判断是否注册了私有源
+        if (shouldUseNrm) {
+          (0, _child_process.exec)('nrm ls', function (error, stdout, stderr) {
+            if (error) {
               callSuccess();
-            }
+            } else {
+              var registers = ('' + stdout).split(/\n/);
 
-            if (!err) {
+              var dic = {
+                exist: false,
+                current: false
+              };
+
+              registers.forEach(function (item) {
+                if (item.indexOf('http://registry.lhanyun.com/') !== -1) {
+                  dic.exist = true;
+                  if (item.indexOf('*') !== -1) {
+                    dic.current = true;
+                  }
+                }
+              });
+
+              var err = void 0;
+              var nrmSpinner1 = (0, _ora2.default)('\u6B63\u5728\u8BBE\u7F6Enpm\u6E90').start();
+              try {
+                if (!dic.exist) {
+                  _shelljs2.default.exec('nrm add zv http://registry.lhanyun.com/');
+                  _shelljs2.default.exec('nrm use zv');
+                } else if (!dic.current) {
+                  _shelljs2.default.exec('nrm use zv');
+                }
+                nrmSpinner1.color = 'green';
+                nrmSpinner1.succeed('' + _chalk2.default.grey('npm源设置成功！'));
+              } catch (error) {
+                err = error;
+                nrmSpinner1.color = 'red';
+                nrmSpinner1.fail(_chalk2.default.red('npm源设置失败，请自行设置并重新安装！'));
+
+                callSuccess();
+              }
+
+              if (!err) {
+                installPackage();
+              }
+            }
+          });
+        } else {
+          var rootPath = creater.getRootPath();
+          var nrmPath = _path2.default.join(rootPath, 'build/nrm.sh');
+          var nrmSpinner = (0, _ora2.default)('\u6B63\u5728\u5B89\u88C5nrm\uFF0C\u5E76\u8BBE\u7F6Enpm\u6E90').start();
+          (0, _child_process.exec)(nrmPath, function (error, stdout, stderr) {
+            if (error) {
+              nrmSpinner.color = 'red';
+              nrmSpinner.fail(_chalk2.default.red('nrm安装失败，请自行重新安装！'));
+              console.log(error);
+            } else {
+              nrmSpinner.color = 'green';
+              nrmSpinner.succeed('' + _chalk2.default.grey('npm源设置成功！'));
               installPackage();
             }
-          }
-        });
+          });
+        }
       } else {
-        var rootPath = creater.getRootPath();
-        var nrmPath = _path2.default.join(rootPath, 'build/nrm.sh');
-        var nrmSpinner = (0, _ora2.default)('\u6B63\u5728\u5B89\u88C5nrm\uFF0C\u5E76\u8BBE\u7F6Enpm\u6E90').start();
-        (0, _child_process.exec)(nrmPath, function (error, stdout, stderr) {
-          if (error) {
-            nrmSpinner.color = 'red';
-            nrmSpinner.fail(_chalk2.default.red('nrm安装失败，请自行重新安装！'));
-            console.log(error);
-          } else {
-            nrmSpinner.color = 'green';
-            nrmSpinner.succeed('' + _chalk2.default.grey('npm源设置成功！'));
-            installPackage();
-          }
-        });
+        installPackage();
       }
     } else {
       callSuccess();

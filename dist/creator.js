@@ -57,17 +57,25 @@ var Creator = function () {
         }
     }, {
         key: 'template',
-        value: function template(from, to, data) {
-            var fromPath = this.templatePath(from);
-            var toPath = this.templatePath(to);
+        value: function template(list) {
+            var _this = this;
 
-            if (!_fsExtra2.default.existsSync(fromPath)) {
-                console.log(_chalk2.default.red('模板路径不存在'));
-                return;
-            }
+            list.forEach(function (item) {
+                var from = item.from,
+                    to = item.to,
+                    data = item.data;
 
-            this.fs.copyTpl(fromPath, toPath, data);
-            // this.fs.commit(() => {})
+
+                var fromPath = _this.templatePath(from);
+                var toPath = _this.templatePath(to);
+
+                if (!_fsExtra2.default.existsSync(fromPath)) {
+                    console.log(_chalk2.default.red(fromPath + '\u6A21\u677F\u8DEF\u5F84\u4E0D\u5B58\u5728'));
+                } else {
+                    _this.fs.copyTpl(fromPath, toPath, data);
+                }
+            });
+
             return this;
         }
     }, {
