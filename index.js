@@ -35,3 +35,9 @@ program
   })
 
 program.parse(process.argv)
+
+// const memFs = require('mem-fs');
+// const memFsEditor = require('mem-fs-editor');
+
+// const store = memFs.create();
+// const fs = memFsEditor.create(store);

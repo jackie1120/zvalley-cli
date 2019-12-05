@@ -12,8 +12,9 @@ export default function createApp (
   ) {
     const {
       projectName,
-      autoInstall = true,
+      autoInstall = false,
       gitPush = false,
+      installUI = false,
       gitAddress,
       template,
       lang
@@ -130,7 +131,7 @@ export default function createApp (
       }
   
       if (autoInstall) {
-        if (template === 'PC端' || template === '移动端-门户开发') {
+        if (template === 'PC端' || template === '移动端-门户开发' || installUI) {
           // 判断nrm是否存在，若存在，则判断是否注册了私有源
           if (shouldUseNrm) {
             exec('nrm ls', (error, stdout, stderr) => {

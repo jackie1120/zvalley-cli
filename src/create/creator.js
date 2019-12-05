@@ -44,7 +44,15 @@ export default class Creator {
         const rootPath = this.getRootPath()
         const fromPath = path.join(rootPath, from)
         const toPath = this.templatePath(to)
-        fs.mkdirSync(toPath);
+
+        if (!fs.existsSync(toPath)) {
+            if (/\.(js|vue|html)$/.test(toPath)) {
+                fs.writeFileSync(toPath)
+            } else {
+                fs.mkdirSync(toPath);
+            }
+        }
+        
         this.fs.copy(fromPath, toPath)
     }
 

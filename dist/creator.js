@@ -84,7 +84,15 @@ var Creator = function () {
             var rootPath = this.getRootPath();
             var fromPath = _path2.default.join(rootPath, from);
             var toPath = this.templatePath(to);
-            _fsExtra2.default.mkdirSync(toPath);
+
+            if (!_fsExtra2.default.existsSync(toPath)) {
+                if (/\.(js|vue|html)$/.test(toPath)) {
+                    _fsExtra2.default.writeFileSync(toPath);
+                } else {
+                    _fsExtra2.default.mkdirSync(toPath);
+                }
+            }
+
             this.fs.copy(fromPath, toPath);
         }
     }, {

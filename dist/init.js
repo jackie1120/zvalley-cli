@@ -30,9 +30,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function createApp(creater, params, cb) {
   var projectName = params.projectName,
       _params$autoInstall = params.autoInstall,
-      autoInstall = _params$autoInstall === undefined ? true : _params$autoInstall,
+      autoInstall = _params$autoInstall === undefined ? false : _params$autoInstall,
       _params$gitPush = params.gitPush,
       gitPush = _params$gitPush === undefined ? false : _params$gitPush,
+      _params$installUI = params.installUI,
+      installUI = _params$installUI === undefined ? false : _params$installUI,
       gitAddress = params.gitAddress,
       template = params.template,
       lang = params.lang;
@@ -149,7 +151,7 @@ function createApp(creater, params, cb) {
     };
 
     if (autoInstall) {
-      if (template === 'PC端' || template === '移动端-门户开发') {
+      if (template === 'PC端' || template === '移动端-门户开发' || installUI) {
         // 判断nrm是否存在，若存在，则判断是否注册了私有源
         if (shouldUseNrm) {
           (0, _child_process.exec)('nrm ls', function (error, stdout, stderr) {

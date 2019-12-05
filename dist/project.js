@@ -155,6 +155,14 @@ var Project = function (_Creator) {
                 message: '是否添加国际化包 ？'
             });
         };
+        _this.askInstallUI = function (template, prompts) {
+            var message = template === 'default' ? '是否安装ZvUI__pc ？' : '是否安装ZvUI ？';
+            prompts.push({
+                type: 'confirm',
+                name: 'installUI',
+                message: message
+            });
+        };
 
         var unSupportedVer = _semver2.default.lt(process.version, 'v7.6.0');
         if (unSupportedVer) {
@@ -167,7 +175,8 @@ var Project = function (_Creator) {
             template: '',
             description: '',
             gitAddress: '',
-            lang: false
+            lang: false,
+            installUI: false
         }, options);
         return _this;
     }
@@ -193,12 +202,20 @@ var Project = function (_Creator) {
                         if (_this2.conf.lang) {
                             _this2.copyTemplate('templates/lang', _this2.conf.projectName + '/src/lang');
                         }
+                        if (_this2.conf.installUI) {
+                            if (_this2.conf.template === '移动端') {
+                                _this2.copyTemplate('templates/mobile/babel.config.js', _this2.conf.projectName + '/babel.config.js');
+                                _this2.copyTemplate('templates/mobile/zv-ui.js', _this2.conf.projectName + '/src/plugins/zv-ui.js');
+                            } else if (_this2.conf.template === 'default') {
+                                _this2.copyTemplate('templates/pc/zv-ui__pc.js', _this2.conf.projectName + '/src/plugins/zv-ui__pc.js');
+                            }
+                        }
 
                         // 为各文件添加模板代码
                         var list = [{
                             from: _this2.conf.projectName + '/package.json',
                             to: _this2.conf.projectName + '/package.json',
-                            data: { name: _this2.conf.projectName, description: _this2.conf.description, lang: _this2.conf.lang }
+                            data: { name: _this2.conf.projectName, description: _this2.conf.description, lang: _this2.conf.lang, installUI: _this2.conf.installUI }
                         }, {
                             from: _this2.conf.projectName + '/public/index.html',
                             to: _this2.conf.projectName + '/public/index.html',
@@ -259,6 +276,7 @@ var Project = function (_Creator) {
             }
             if (conf.template === 'default' || conf.template === '移动端') {
                 this.askLang(prompts);
+                this.askInstallUI(conf.template, prompts);
             }
             return _inquirer2.default.prompt(prompts);
         }

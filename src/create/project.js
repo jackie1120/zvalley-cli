@@ -114,6 +114,14 @@ export default class Project extends Creator {
             message: '是否添加国际化包 ？'
             })
         };
+        this.askInstallUI = function (template, prompts) {
+            const message = template === 'default' ? '是否安装ZvUI__pc ？' : '是否安装ZvUI ？'
+            prompts.push({
+            type: 'confirm',
+            name: 'installUI',
+            message
+            })
+        };
 
         const unSupportedVer = semver.lt(process.version, 'v7.6.0');
         if (unSupportedVer) {
@@ -126,7 +134,8 @@ export default class Project extends Creator {
             template: '',
             description: '',
             gitAddress: '',
-            lang: false
+            lang: false,
+            installUI: false
         }, options);
     }
 
@@ -148,13 +157,21 @@ export default class Project extends Creator {
                             if (this.conf.lang) {
                                 this.copyTemplate('templates/lang', `${this.conf.projectName}/src/lang`)
                             }
+                            if (this.conf.installUI) {
+                                if (this.conf.template === '移动端') {
+                                    this.copyTemplate('templates/mobile/babel.config.js', `${this.conf.projectName}/babel.config.js`)
+                                    this.copyTemplate('templates/mobile/zv-ui.js', `${this.conf.projectName}/src/plugins/zv-ui.js`)
+                                } else if (this.conf.template === 'default') {
+                                    this.copyTemplate('templates/pc/zv-ui__pc.js', `${this.conf.projectName}/src/plugins/zv-ui__pc.js`)
+                                }
+                            }
 
                             // 为各文件添加模板代码
                             let list = [
                                 {
                                     from: `${this.conf.projectName}/package.json`,
                                     to: `${this.conf.projectName}/package.json`,
-                                    data: { name: this.conf.projectName, description: this.conf.description, lang: this.conf.lang }
+                                    data: { name: this.conf.projectName, description: this.conf.description, lang: this.conf.lang, installUI: this.conf.installUI }
                                 }, {
                                     from: `${this.conf.projectName}/public/index.html`,
                                     to: `${this.conf.projectName}/public/index.html`,
@@ -213,6 +230,7 @@ export default class Project extends Creator {
         }
         if (conf.template === 'default' || conf.template === '移动端' ) {
             this.askLang(prompts)
+            this.askInstallUI(conf.template, prompts)
         }
         return inquirer.prompt(prompts);
     }
