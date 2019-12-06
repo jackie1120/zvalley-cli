@@ -225,12 +225,12 @@ export default class Project extends Creator {
     }
     askNext(conf) {
         const prompts = [];
-        if (conf.gitPush) {
-            this.askGitAddress(prompts)
-        }
         if (conf.template === 'default' || conf.template === '移动端' ) {
             this.askLang(prompts)
             this.askInstallUI(conf.template, prompts)
+        }
+        if (conf.gitPush) {
+            this.askGitAddress(prompts)
         }
         return inquirer.prompt(prompts);
     }

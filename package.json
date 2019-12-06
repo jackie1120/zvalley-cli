@@ -1,6 +1,6 @@
 {
   "name": "zvalley-cli",
-  "version": "1.0.3",
+  "version": "2.0.0-beta2",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -19,6 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "adm-zip": "^0.4.13",
+    "babel-runtime": "^6.26.0",
     "chalk": "^2.4.2",
     "commander": "^2.19.0",
     "download-git-repo": "^1.1.0",
