@@ -5,6 +5,7 @@ import { exec } from 'child_process'
 import shell from 'shelljs'
 import { templates } from 'handlebars';
 
+// createApp 做的内容 主要是安装 npm依赖和 初始化git仓库
 export default function createApp (
     creater,
     params,
@@ -29,21 +30,8 @@ export default function createApp (
       console.log()
       console.log(`${chalk.green('✔ ')}${chalk.grey(`创建项目: ${chalk.grey.bold(projectName)}`)}`)
       console.log()
-  
-      // git init
-    //   const gitInitSpinner = ora(`cd ${chalk.cyan.bold(projectName)}, 执行 ${chalk.cyan.bold('git init')}`).start()
-    //   process.chdir(projectPath)
-    //   const gitInit = exec('git init')
-    //   gitInit.on('close', code => {
-    //     if (code === 0) {
-    //       gitInitSpinner.color = 'green'
-    //       gitInitSpinner.succeed(gitInit.stdout.read())
-    //     } else {
-    //       gitInitSpinner.color = 'red'
-    //       gitInitSpinner.fail(gitInit.stderr.read())
-    //     }
-    //   })
-  
+      
+      // 执行成功之后的提示语
       const callSuccess = () => {
         console.log(chalk.green(`创建项目 ${chalk.green.bold(projectName)} 成功！`))
         console.log(chalk.green(`请进入项目目录 ${chalk.green.bold(projectName)} 开始工作吧！😝`))
@@ -55,6 +43,7 @@ export default function createApp (
         }
       }
 
+       // 自动关联git仓库执行成功之后的提示语
       const gitPushFunc = () => {
         const gitSpinner = ora(`正在上传Git仓库, 需要一会儿...`).start()
         process.chdir(projectPath)
@@ -77,24 +66,9 @@ export default function createApp (
         }
 
         callSuccess()
-        // const rootPath = creater.getRootPath()
-        // const gitPushPath = path.join(rootPath, 'build/gitpush.sh')
-        // console.log(gitPushPath)
-        // exec(gitPushPath, (error, stdout, stderr) => {
-        //     if (error) {
-        //         // gitSpinner.color = 'red'
-        //         // gitSpinner.fail(chalk.red('上传Git仓库失败，请自行上传！'))
-        //         console.log(error)
-        //     } else {
-        //         // gitSpinner.color = 'green'
-        //         // gitSpinner.succeed('上传Git仓库成功')
-        //         console.log(`${stderr}${stdout}`)
-        //     }
-
-        //     callSuccess()
-        // })
       }
 
+      // 自动安装依赖的相关操作
       const installPackage = () => {
         // packages install
         const installSpinner = ora(`执行安装项目依赖 ${chalk.cyan.bold('npm install')}, 需要一会儿...`).start()
@@ -120,7 +94,8 @@ export default function createApp (
             }
         })
       }
-
+      
+      // 展示用户的 npm 安装地址列表
       const shouldUseNrm = () => {
         try {
           execSync('nrm --version', { stdio: 'ignore' })
@@ -130,6 +105,8 @@ export default function createApp (
         }
       }
   
+      // 自动安装依赖的时候 切换包的npm地址，并进行安装
+      // TODO: 需要修改一下简单的逻辑
       if (autoInstall) {
         if (template === 'PC端' || template === '移动端-门户开发' || installUI) {
           // 判断nrm是否存在，若存在，则判断是否注册了私有源

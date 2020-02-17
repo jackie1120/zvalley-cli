@@ -13,6 +13,7 @@ import chalk from 'chalk';
 import  ora from 'ora';
 import download from 'download-git-repo';
 
+// 下载远程的项目模版函数
 export default function fetchTemplate(templateSource, templatePath, clone) {
     return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
         // 下载文件的缓存目录
