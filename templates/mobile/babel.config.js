@@ -10,17 +10,17 @@ module.exports = {
         },
         'vant'
       ],
-      [
-        'import',
-        {
-          libraryName: '@zvalley/zv-ui',
-          libraryDirectory: 'packages',
-          style: name => {
-            const newName = name.replace('packages', 'packages/theme-chalk/lib')
-            return `${newName}.vw.css`
-          }
-        },
-        'zv-ui'
-      ]
+      // [
+      //   'import',
+      //   {
+      //     libraryName: '@zvalley/zv-ui',
+      //     libraryDirectory: 'packages',
+      //     style: name => {
+      //       const newName = name.replace('packages', 'packages/theme-chalk/lib')
+      //       return `${newName}.vw.css`
+      //     }
+      //   },
+      //   'zv-ui'
+      // ]
     ]
   }

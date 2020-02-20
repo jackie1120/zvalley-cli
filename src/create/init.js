@@ -106,9 +106,8 @@ export default function createApp (
       }
   
       // 自动安装依赖的时候 切换包的npm地址，并进行安装
-      // TODO: 需要修改一下简单的逻辑
       if (autoInstall) {
-        if (template === 'PC端' || template === '移动端-门户开发' || installUI) {
+        // if (template === 'PC端' || template === '移动端-门户开发' || installUI) {
           // 判断nrm是否存在，若存在，则判断是否注册了私有源
           if (shouldUseNrm) {
             exec('nrm ls', (error, stdout, stderr) => {
@@ -174,8 +173,8 @@ export default function createApp (
         } else {
           installPackage()
         }
-      } else {
-        callSuccess()
-      }
+      // } else {
+      //   callSuccess()
+      // }
     })
   }
