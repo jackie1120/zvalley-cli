@@ -190,11 +190,6 @@ function createApp(creater, params, cb) {
           }
         });
       }
-    } else {
-      installPackage();
     }
-    // } else {
-    //   callSuccess()
-    // }
   });
 }

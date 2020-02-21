@@ -190,6 +190,7 @@ var Project = function (_Creator) {
       gitAddress: "",
       lang: false,
       themeReplace: false,
+      autoInstall: false,
       installUI: false
     }, options);
     return _this;
@@ -241,7 +242,7 @@ var Project = function (_Creator) {
             if (_this2.conf.installUI) {
               if (_this2.conf.template !== "default") {
                 _this2.copyTemplate("templates/mobile/babel.config.js", _this2.conf.projectName + "/babel.config.js");
-                _this2.copyTemplate("templates/mobile/vant.js", _this2.conf.projectName + "/src/plugins/vant.js");
+                _this2.copyTemplate("templates/mobile/vant_ui.js", _this2.conf.projectName + "/src/plugins/vant-ui.js");
               } else {
                 _this2.copyTemplate("templates/pc/babel.config.js", _this2.conf.projectName + "/babel.config.js");
                 _this2.copyTemplate("templates/pc/element_ui.js", _this2.conf.projectName + "/src/plugins/element_ui.js");
@@ -288,13 +289,19 @@ var Project = function (_Creator) {
                 installUI: _this2.conf.installUI
               }
             }, {
+              from: _this2.conf.projectName + "/src/utils/permission.js",
+              to: _this2.conf.projectName + "/src/utils/permission.js",
+              data: {
+                isHybrid: isHybrid
+              }
+            }, {
               from: _this2.conf.projectName + "/src/views/Home.vue",
               to: _this2.conf.projectName + "/src/views/Home.vue",
               data: { lang: _this2.conf.lang, themeReplace: _this2.conf.themeReplace }
             }];
 
             var creator = _this2.template(list);
-
+            console.log(_this2.conf);
             (0, _init2.default)(creator, _this2.conf);
           }).catch(function (err) {
             return console.log(_chalk2.default.red("创建项目失败: ", err));

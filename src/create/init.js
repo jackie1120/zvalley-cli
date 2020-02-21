@@ -108,73 +108,68 @@ export default function createApp (
       // 自动安装依赖的时候 切换包的npm地址，并进行安装
       if (autoInstall) {
         // if (template === 'PC端' || template === '移动端-门户开发' || installUI) {
-          // 判断nrm是否存在，若存在，则判断是否注册了私有源
-          if (shouldUseNrm) {
-            exec('nrm ls', (error, stdout, stderr) => {
-              if (error) {
-                callSuccess()
-              } else {
-                const registers = `${stdout}`.split(/\n/)
-               
-                let dic = {
-                  exist: false,
-                  current: false
-                }
+        // 判断nrm是否存在，若存在，则判断是否注册了私有源
+        if (shouldUseNrm) {
+          exec('nrm ls', (error, stdout, stderr) => {
+            if (error) {
+              callSuccess()
+            } else {
+              const registers = `${stdout}`.split(/\n/)
               
-                registers.forEach(item => {
-                  if (item.indexOf('http://registry.lhanyun.com/') !== -1) {
-                    dic.exist = true
-                    if (item.indexOf('*') !== -1) {
-                      dic.current = true
-                    }
-                  }
-                })
-               
-                let err
-                const nrmSpinner1 = ora(`正在设置npm源`).start();
-                try {
-                  if (!dic.exist) {
-                    shell.exec('nrm add zv http://registry.lhanyun.com/')
-                    shell.exec('nrm use zv')
-                  } else if (!dic.current) {
-                    shell.exec('nrm use zv')
-                  }
-                  nrmSpinner1.color = 'green'
-                  nrmSpinner1.succeed(`${chalk.grey('npm源设置成功！')}`);
-                } catch (error) {
-                  err = error
-                  nrmSpinner1.color = 'red'
-                  nrmSpinner1.fail(chalk.red('npm源设置失败，请自行设置并重新安装！'))
-  
-                  callSuccess()
-                }
-  
-                if (!err) {
-                  installPackage()
-                }
+              let dic = {
+                exist: false,
+                current: false
               }
-            })
-          } else {
-            const rootPath = creater.getRootPath()
-            const nrmPath = path.join(rootPath, 'build/nrm.sh')
-            const nrmSpinner = ora(`正在安装nrm，并设置npm源`).start();
-            exec(nrmPath, (error, stdout, stderr) => {
-                if (error) {
-                    nrmSpinner.color = 'red'
-                    nrmSpinner.fail(chalk.red('nrm安装失败，请自行重新安装！'))
-                    console.log(error)
-                } else {
-                    nrmSpinner.color = 'green'
-                    nrmSpinner.succeed(`${chalk.grey('npm源设置成功！')}`);
-                    installPackage()
+            
+              registers.forEach(item => {
+                if (item.indexOf('http://registry.lhanyun.com/') !== -1) {
+                  dic.exist = true
+                  if (item.indexOf('*') !== -1) {
+                    dic.current = true
+                  }
                 }
-            })
-          }
+              })
+              
+              let err
+              const nrmSpinner1 = ora(`正在设置npm源`).start();
+              try {
+                if (!dic.exist) {
+                  shell.exec('nrm add zv http://registry.lhanyun.com/')
+                  shell.exec('nrm use zv')
+                } else if (!dic.current) {
+                  shell.exec('nrm use zv')
+                }
+                nrmSpinner1.color = 'green'
+                nrmSpinner1.succeed(`${chalk.grey('npm源设置成功！')}`);
+              } catch (error) {
+                err = error
+                nrmSpinner1.color = 'red'
+                nrmSpinner1.fail(chalk.red('npm源设置失败，请自行设置并重新安装！'))
+
+                callSuccess()
+              }
+
+              if (!err) {
+                installPackage()
+              }
+            }
+          })
         } else {
-          installPackage()
+          const rootPath = creater.getRootPath()
+          const nrmPath = path.join(rootPath, 'build/nrm.sh')
+          const nrmSpinner = ora(`正在安装nrm，并设置npm源`).start();
+          exec(nrmPath, (error, stdout, stderr) => {
+              if (error) {
+                  nrmSpinner.color = 'red'
+                  nrmSpinner.fail(chalk.red('nrm安装失败，请自行重新安装！'))
+                  console.log(error)
+              } else {
+                  nrmSpinner.color = 'green'
+                  nrmSpinner.succeed(`${chalk.grey('npm源设置成功！')}`);
+                  installPackage()
+              }
+          })
         }
-      // } else {
-      //   callSuccess()
-      // }
+      }
     })
   }

@@ -154,6 +154,7 @@ export default class Project extends Creator {
         gitAddress: "",
         lang: false,
         themeReplace: false,
+        autoInstall: false,
         installUI: false
       },
       options
@@ -213,8 +214,8 @@ export default class Project extends Creator {
                   `${this.conf.projectName}/babel.config.js`
                 );
                 this.copyTemplate(
-                  "templates/mobile/vant.js",
-                  `${this.conf.projectName}/src/plugins/vant.js`
+                  "templates/mobile/vant_ui.js",
+                  `${this.conf.projectName}/src/plugins/vant-ui.js`
                 );
               } else {
                 this.copyTemplate(
@@ -288,7 +289,7 @@ export default class Project extends Creator {
             ];
 
             const creator = this.template(list);
-
+            console.log(this.conf)
             createApp(creator, this.conf);
           })
           .catch(err => console.log(chalk.red("创建项目失败: ", err)));
