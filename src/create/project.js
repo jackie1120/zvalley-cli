@@ -238,6 +238,7 @@ export default class Project extends Creator {
                   isHybrid,
                   name: this.conf.projectName,
                   description: this.conf.description,
+                  themeReplace: this.conf.themeReplace,
                   lang: this.conf.lang,
                   installUI: this.conf.installUI
                 }
@@ -271,6 +272,13 @@ export default class Project extends Creator {
                       themeReplace: this.conf.themeReplace,
                       installUI: this.conf.installUI
                   }
+              },
+              {
+                from: `${this.conf.projectName}/src/utils/permission.js`,
+                to: `${this.conf.projectName}/src/utils/permission.js`,
+                data: {
+                  isHybrid
+                }
               },
               {
                 from: `${this.conf.projectName}/src/views/Home.vue`,
@@ -308,7 +316,7 @@ export default class Project extends Creator {
     this.askProjectName(conf, prompts);
     this.askDescription(conf, prompts);
     this.askTemplate(conf, prompts);
-    this.askLang(prompts);
+    this.askLang(conf, prompts);
     this.askThemeReplace(conf, prompts);
     this.askInstall(conf, prompts);
     this.askPush(conf, prompts);

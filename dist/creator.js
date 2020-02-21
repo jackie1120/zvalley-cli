@@ -36,13 +36,18 @@ var Creator = function () {
 
         var store = _memFs2.default.create();
         this.fs = _memFsEditor2.default.create(store);
-
         this.init();
     }
+
+    // 初始化的相关内容
+
 
     _createClass(Creator, [{
         key: 'init',
         value: function init() {}
+
+        // 获取模版的路径
+
     }, {
         key: 'templatePath',
         value: function templatePath(name) {
@@ -50,11 +55,18 @@ var Creator = function () {
             var filepath = _path2.default.join(cwd, name);
             return filepath;
         }
+
+        // 获取根目录的路径
+
     }, {
         key: 'getRootPath',
         value: function getRootPath() {
             return _path2.default.resolve(__dirname, '../');
         }
+
+        // 将对应的模版替换到工程的位置 参数为Array
+        // 每个Array的item中的参数需要有from, to, data
+
     }, {
         key: 'template',
         value: function template(list) {
@@ -72,12 +84,16 @@ var Creator = function () {
                 if (!_fsExtra2.default.existsSync(fromPath)) {
                     console.log(_chalk2.default.red(fromPath + '\u6A21\u677F\u8DEF\u5F84\u4E0D\u5B58\u5728'));
                 } else {
+                    // 替换对应的文件中的模版语法
                     _this.fs.copyTpl(fromPath, toPath, data);
                 }
             });
 
             return this;
         }
+
+        // 复制对应的模版到工程中去，当是js/vue/html时是复制文件，其他的是创建文件
+
     }, {
         key: 'copyTemplate',
         value: function copyTemplate(from, to) {
@@ -95,6 +111,9 @@ var Creator = function () {
 
             this.fs.copy(fromPath, toPath);
         }
+
+        // 项目/框架初始化时保留一些空文件，批量新增gitkeep
+
     }, {
         key: 'writeGitKeepFile',
         value: function writeGitKeepFile(dirname) {

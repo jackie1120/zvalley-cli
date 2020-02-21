@@ -59,6 +59,9 @@ var __awaiter = undefined && undefined.__awaiter || function (thisArg, _argument
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
+
+// 下载远程的项目模版函数
 function fetchTemplate(templateSource, templatePath, clone) {
     var _this = this;
 
