@@ -67,6 +67,14 @@ export default class Project extends Creator {
         {
           name: "混合开发",
           value: "Hybrid"
+        },
+        {
+          name: "小程序开发uni-app",
+          value: "mini-programme"
+        },
+        {
+          name: "vue插件开发",
+          value: "vue-plugin"
         }
       ];
       if (typeof conf.template !== "string") {
@@ -175,125 +183,140 @@ export default class Project extends Creator {
   create() {
     this.ask().then(answers => {
       this.conf = Object.assign(this.conf, answers);
-      this.askNext(this.conf).then(answers => {
+      this.askImportModule().then(answers => {
         this.conf = Object.assign(this.conf, answers);
-        this.fetchTemplates(this.conf.template, this.conf.projectName)
-          .then(() => {
-            // 判断是否是手机环境的 
-            const isMobile = this.conf.template !== 'default'
-            // 判断是否是混合开发环境
-            const isHybrid = isMobile && this.conf.template === 'Hybrid'
-            // copy国际化文件包
-            if (this.conf.lang) {
-              this.copyTemplate(
-                "templates/lang",
-                `${this.conf.projectName}/src/lang`
-              );
-            }
-            // copy主题色换肤文件包
-            if (this.conf.themeReplace) {
-              this.copyTemplate(
-                "templates/themeColorReplace",
-                `${this.conf.projectName}/src/utils`
-              );
-            }
-
-            // 注入原生包
-            if (isHybrid) {
+        this.askNext(this.conf).then(answers => {
+          this.conf = Object.assign(this.conf, answers);
+          this.fetchTemplates(this.conf.template, this.conf.projectName)
+            .then(() => {
+              if (['mini-programme', 'vue-plugin'].includes(this.conf.template)) {
+                createApp(creator, this.conf);
+                return
+              }
+              // 判断是否是手机环境的 
+              const isMobile = this.conf.template !== 'default'
+              // 判断是否是混合开发环境
+              const isHybrid = isMobile && this.conf.template === 'Hybrid'
+              // copy国际化文件包
+              if (this.conf.lang) {
                 this.copyTemplate(
-                    "templates/hybrid",
-                    `${this.conf.projectName}/src/utils`
-                );
-            }
-
-            // 组件库的添加 手机端添加 vant-ui / pc安装 element-ui
-            if (this.conf.installUI) {
-              if (this.conf.template !== "default") {
-                this.copyTemplate(
-                  "templates/mobile/babel.config.js",
-                  `${this.conf.projectName}/babel.config.js`
-                );
-                this.copyTemplate(
-                  "templates/mobile/vant_ui.js",
-                  `${this.conf.projectName}/src/plugins/vant-ui.js`
-                );
-              } else {
-                this.copyTemplate(
-                    "templates/pc/babel.config.js",
-                    `${this.conf.projectName}/babel.config.js`
-                );
-                this.copyTemplate(
-                  "templates/pc/element_ui.js",
-                  `${this.conf.projectName}/src/plugins/element_ui.js`
+                  "templates/lang",
+                  `${this.conf.projectName}/src/lang`
                 );
               }
-            }
+              // copy主题色换肤文件包
+              if (this.conf.themeReplace) {
+                this.copyTemplate(
+                  "templates/themeColorReplace",
+                  `${this.conf.projectName}/src/utils`
+                );
+              }
 
-            // 为各文件添加模板代码
-            let list = [
-              {
-                from: `${this.conf.projectName}/package.json`,
-                to: `${this.conf.projectName}/package.json`,
-                data: {
-                  isMobile,
-                  isHybrid,
-                  name: this.conf.projectName,
-                  description: this.conf.description,
-                  themeReplace: this.conf.themeReplace,
-                  lang: this.conf.lang,
-                  installUI: this.conf.installUI
+              // 注入手机上的一些兼用性解决方案
+              if (isMobile) {
+                this.copyTemplate(
+                  "templates/mobile/solution.js",
+                  `${this.conf.projectName}/src/utils/solution.js`
+                );
+              }
+
+              // 注入原生包
+              if (isHybrid) {
+                this.copyTemplate(
+                  "templates/hybrid",
+                  `${this.conf.projectName}/src/utils`
+                );
+              }
+
+              // 组件库的添加 手机端添加 vant-ui / pc安装 element-ui
+              if (this.conf.installUI) {
+                if (this.conf.template !== "default") {
+                  this.copyTemplate(
+                    "templates/mobile/babel.config.js",
+                    `${this.conf.projectName}/babel.config.js`
+                  );
+                  this.copyTemplate(
+                    "templates/mobile/vant_ui.js",
+                    `${this.conf.projectName}/src/plugins/vant-ui.js`
+                  );
+                } else {
+                  this.copyTemplate(
+                    "templates/pc/babel.config.js",
+                    `${this.conf.projectName}/babel.config.js`
+                  );
+                  this.copyTemplate(
+                    "templates/pc/element_ui.js",
+                    `${this.conf.projectName}/src/plugins/element_ui.js`
+                  );
                 }
-              },
-              {
-                from: `${this.conf.projectName}/public/index.html`,
-                to: `${this.conf.projectName}/public/index.html`,
-                data: { title: this.conf.projectName }
-              },
-              {
-                from: `${this.conf.projectName}/src/main.js`,
-                to: `${this.conf.projectName}/src/main.js`,
-                data: {
+              }
+
+              // 为各文件添加模板代码
+              let list = [
+                {
+                  from: `${this.conf.projectName}/package.json`,
+                  to: `${this.conf.projectName}/package.json`,
+                  data: {
+                    isMobile,
+                    isHybrid,
+                    name: this.conf.projectName,
+                    description: this.conf.description,
+                    themeReplace: this.conf.themeReplace,
+                    lang: this.conf.lang,
+                    installUI: this.conf.installUI
+                  }
+                },
+                {
+                  from: `${this.conf.projectName}/public/index.html`,
+                  to: `${this.conf.projectName}/public/index.html`,
+                  data: { title: this.conf.projectName }
+                },
+                {
+                  from: `${this.conf.projectName}/src/main.js`,
+                  to: `${this.conf.projectName}/src/main.js`,
+                  data: {
                     isMobile,
                     isHybrid,
                     lang: this.conf.lang
-                }
-              },
-              {
+                  }
+                },
+                {
                   from: `${this.conf.projectName}/postcss.config.js`,
                   to: `${this.conf.projectName}/postcss.config.js`,
                   data: {
-                      isMobile
+                    isMobile
                   }
-              },
-              {
-                from: `${this.conf.projectName}/vue.config.js`,
-                to: `${this.conf.projectName}/vue.config.js`,
+                },
+                {
+                  from: `${this.conf.projectName}/vue.config.js`,
+                  to: `${this.conf.projectName}/vue.config.js`,
                   data: {
-                      isMobile,
-                      themeReplace: this.conf.themeReplace,
-                      installUI: this.conf.installUI
+                    isMobile,
+                    themeReplace: this.conf.themeReplace,
+                    installUI: this.conf.installUI
                   }
-              },
-              {
-                from: `${this.conf.projectName}/src/utils/permission.js`,
-                to: `${this.conf.projectName}/src/utils/permission.js`,
-                data: {
-                  isHybrid
-                }
-              },
-              {
-                from: `${this.conf.projectName}/src/views/Home.vue`,
-                to: `${this.conf.projectName}/src/views/Home.vue`,
+                },
+                {
+                  from: `${this.conf.projectName}/src/utils/permission.js`,
+                  to: `${this.conf.projectName}/src/utils/permission.js`,
+                  data: {
+                    isHybrid
+                  }
+                },
+                {
+                  from: `${this.conf.projectName}/src/views/Home.vue`,
+                  to: `${this.conf.projectName}/src/views/Home.vue`,
                   data: { lang: this.conf.lang, themeReplace: this.conf.themeReplace }
-              }
-            ];
+                }
+              ];
 
-            const creator = this.template(list);
-            console.log(this.conf)
-            createApp(creator, this.conf);
-          })
-          .catch(err => console.log(chalk.red("创建项目失败: ", err)));
-      });
+              const creator = this.template(list);
+              console.log(this.conf)
+              createApp(creator, this.conf);
+            })
+            .catch(err => console.log(chalk.red("创建项目失败: ", err)));
+        });
+      })
     });
   }
 
@@ -303,30 +326,45 @@ export default class Project extends Creator {
     // if (template === "default") {
     let url = "122687220/web-template";
     // }
-
+    if (template === 'mini-programme') {
+      url = 'direct:http://gitlab.zoomlion.com/po_web/miniprograms-template.git#dev'
+    }
+    if (template === 'vue-plugin') {
+      url = 'direct:http://gitlab.zoomlion.com/po_web/vue-plugin-template.git'
+    }
+    
     const filePath = this.templatePath(projectName);
 
     // 从模板源下载模板122687220/web-template
     return fetchTemplate(url, filePath);
   }
 
-  // 用户的所有问题的集合
+  // 用户的通用问题的集合
   ask() {
     const prompts = [];
     const conf = this.conf;
     this.askProjectName(conf, prompts);
     this.askDescription(conf, prompts);
     this.askTemplate(conf, prompts);
-    this.askLang(conf, prompts);
-    this.askThemeReplace(conf, prompts);
     this.askInstall(conf, prompts);
     this.askPush(conf, prompts);
     return inquirer.prompt(prompts);
   }
+
+  // 工程注入的模块问题
+  askImportModule() {
+    const conf = this.conf;
+    this.askLang(conf, prompts);
+    this.askThemeReplace(conf, prompts);
+    return inquirer.prompt(prompts);
+  }
+
   // 询问完上面的内容之后需要继续询问的内容
   askNext(conf) {
     const prompts = [];
-    this.askInstallUI(conf.template, prompts);
+    if (!['mini-programme', 'vue-plugin'].includes(this.conf.template)) {
+      this.askInstallUI(conf.template, prompts);
+    }
     if (conf.gitPush) {
       this.askGitAddress(prompts);
     }

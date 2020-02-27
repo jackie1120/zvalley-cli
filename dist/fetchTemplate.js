@@ -62,73 +62,112 @@ var __awaiter = undefined && undefined.__awaiter || function (thisArg, _argument
 
 
 // 下载远程的项目模版函数
-function fetchTemplate(templateSource, templatePath, clone) {
+function fetchTemplate(templateSource, templatePath) {
     var _this = this;
 
+    var clone = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
     return new Promise(function (resolve, reject) {
-        return __awaiter(_this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
+        return __awaiter(_this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
             var _this2 = this;
 
             var spinner, name;
-            return _regenerator2.default.wrap(function _callee2$(_context2) {
+            return _regenerator2.default.wrap(function _callee3$(_context3) {
                 while (1) {
-                    switch (_context2.prev = _context2.next) {
+                    switch (_context3.prev = _context3.next) {
                         case 0:
                             if (!_fsExtra2.default.existsSync(templatePath)) {
-                                _context2.next = 3;
+                                _context3.next = 3;
                                 break;
                             }
 
-                            _context2.next = 3;
+                            _context3.next = 3;
                             return _fsExtra2.default.remove(templatePath);
 
                         case 3:
-                            _context2.next = 5;
+                            _context3.next = 5;
                             return _fsExtra2.default.mkdir(templatePath);
 
                         case 5:
                             spinner = (0, _ora2.default)('\u6B63\u5728\u4ECE ' + templateSource + ' \u62C9\u53D6\u8FDC\u7A0B\u6A21\u677F...').start();
                             name = _path2.default.basename(templateSource);
 
-                            (0, _downloadGitRepo2.default)(templateSource, templatePath, function (error) {
-                                return __awaiter(_this2, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee() {
-                                    return _regenerator2.default.wrap(function _callee$(_context) {
-                                        while (1) {
-                                            switch (_context.prev = _context.next) {
-                                                case 0:
-                                                    if (!error) {
-                                                        _context.next = 6;
-                                                        break;
-                                                    }
+                            if (clone) {
+                                (0, _downloadGitRepo2.default)(templateSource, templatePath, {
+                                    clone: true
+                                }, function (error) {
+                                    return __awaiter(_this2, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee() {
+                                        return _regenerator2.default.wrap(function _callee$(_context) {
+                                            while (1) {
+                                                switch (_context.prev = _context.next) {
+                                                    case 0:
+                                                        if (!error) {
+                                                            _context.next = 6;
+                                                            break;
+                                                        }
 
-                                                    spinner.color = 'red';
-                                                    spinner.fail(_chalk2.default.red('拉取远程模板仓库失败！'));
-                                                    _context.next = 5;
-                                                    return _fsExtra2.default.remove(tempPath);
+                                                        spinner.color = 'red';
+                                                        spinner.fail(_chalk2.default.red('拉取远程模板仓库失败！'));
+                                                        _context.next = 5;
+                                                        return _fsExtra2.default.remove(tempPath);
 
-                                                case 5:
-                                                    resolve();
+                                                    case 5:
+                                                        resolve();
 
-                                                case 6:
-                                                    spinner.color = 'green';
-                                                    spinner.succeed('' + _chalk2.default.grey('拉取远程模板仓库成功！'));
-                                                    resolve();
+                                                    case 6:
+                                                        spinner.color = 'green';
+                                                        spinner.succeed('' + _chalk2.default.grey('拉取远程模板仓库成功！'));
+                                                        resolve();
 
-                                                case 9:
-                                                case 'end':
-                                                    return _context.stop();
+                                                    case 9:
+                                                    case 'end':
+                                                        return _context.stop();
+                                                }
                                             }
-                                        }
-                                    }, _callee, this);
-                                }));
-                            });
+                                        }, _callee, this);
+                                    }));
+                                });
+                            } else {
+                                (0, _downloadGitRepo2.default)(templateSource, templatePath, function (error) {
+                                    return __awaiter(_this2, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
+                                        return _regenerator2.default.wrap(function _callee2$(_context2) {
+                                            while (1) {
+                                                switch (_context2.prev = _context2.next) {
+                                                    case 0:
+                                                        if (!error) {
+                                                            _context2.next = 6;
+                                                            break;
+                                                        }
+
+                                                        spinner.color = 'red';
+                                                        spinner.fail(_chalk2.default.red('拉取远程模板仓库失败！'));
+                                                        _context2.next = 5;
+                                                        return _fsExtra2.default.remove(tempPath);
+
+                                                    case 5:
+                                                        resolve();
+
+                                                    case 6:
+                                                        spinner.color = 'green';
+                                                        spinner.succeed('' + _chalk2.default.grey('拉取远程模板仓库成功！'));
+                                                        resolve();
+
+                                                    case 9:
+                                                    case 'end':
+                                                        return _context2.stop();
+                                                }
+                                            }
+                                        }, _callee2, this);
+                                    }));
+                                });
+                            }
 
                         case 8:
                         case 'end':
-                            return _context2.stop();
+                            return _context3.stop();
                     }
                 }
-            }, _callee2, this);
+            }, _callee3, this);
         }));
     });
 }
