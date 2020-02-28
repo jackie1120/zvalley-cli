@@ -354,6 +354,7 @@ export default class Project extends Creator {
   // 工程注入的模块问题
   askImportModule() {
     const conf = this.conf;
+    const prompts = []
     this.askLang(conf, prompts);
     this.askThemeReplace(conf, prompts);
     return inquirer.prompt(prompts);

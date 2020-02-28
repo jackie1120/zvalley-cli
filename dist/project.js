@@ -371,6 +371,7 @@ var Project = function (_Creator) {
     key: "askImportModule",
     value: function askImportModule() {
       var conf = this.conf;
+      var prompts = [];
       this.askLang(conf, prompts);
       this.askThemeReplace(conf, prompts);
       return _inquirer2.default.prompt(prompts);
