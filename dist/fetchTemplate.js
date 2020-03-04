@@ -71,7 +71,7 @@ function fetchTemplate(templateSource, templatePath) {
         return __awaiter(_this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
             var _this2 = this;
 
-            var spinner, name;
+            var spinner;
             return _regenerator2.default.wrap(function _callee3$(_context3) {
                 while (1) {
                     switch (_context3.prev = _context3.next) {
@@ -90,7 +90,7 @@ function fetchTemplate(templateSource, templatePath) {
 
                         case 5:
                             spinner = (0, _ora2.default)('\u6B63\u5728\u4ECE ' + templateSource + ' \u62C9\u53D6\u8FDC\u7A0B\u6A21\u677F...').start();
-                            name = _path2.default.basename(templateSource);
+
 
                             if (clone) {
                                 (0, _downloadGitRepo2.default)(templateSource, templatePath, {
@@ -109,7 +109,7 @@ function fetchTemplate(templateSource, templatePath) {
                                                         spinner.color = 'red';
                                                         spinner.fail(_chalk2.default.red('拉取远程模板仓库失败！'));
                                                         _context.next = 5;
-                                                        return _fsExtra2.default.remove(tempPath);
+                                                        return _fsExtra2.default.remove(templatePath);
 
                                                     case 5:
                                                         resolve();
@@ -142,7 +142,7 @@ function fetchTemplate(templateSource, templatePath) {
                                                         spinner.color = 'red';
                                                         spinner.fail(_chalk2.default.red('拉取远程模板仓库失败！'));
                                                         _context2.next = 5;
-                                                        return _fsExtra2.default.remove(tempPath);
+                                                        return _fsExtra2.default.remove(templatePath);
 
                                                     case 5:
                                                         resolve();
@@ -162,7 +162,7 @@ function fetchTemplate(templateSource, templatePath) {
                                 });
                             }
 
-                        case 8:
+                        case 7:
                         case 'end':
                             return _context3.stop();
                     }

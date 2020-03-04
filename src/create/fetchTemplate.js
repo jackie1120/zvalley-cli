@@ -22,7 +22,6 @@ export default function fetchTemplate(templateSource, templatePath, clone = fals
         yield fs.mkdir(templatePath);
         const spinner = ora(`正在从 ${templateSource} 拉取远程模板...`).start();
         
-        let name = path.basename(templateSource);
         if (clone) {
             download(templateSource, templatePath, {
                 clone: true
@@ -30,7 +29,7 @@ export default function fetchTemplate(templateSource, templatePath, clone = fals
                 if (error) {
                     spinner.color = 'red';
                     spinner.fail(chalk.red('拉取远程模板仓库失败！'));
-                    yield fs.remove(tempPath);
+                    yield fs.remove(templatePath);
                     resolve();
                 }
                 spinner.color = 'green';
@@ -42,7 +41,7 @@ export default function fetchTemplate(templateSource, templatePath, clone = fals
                 if (error) {
                     spinner.color = 'red';
                     spinner.fail(chalk.red('拉取远程模板仓库失败！'));
-                    yield fs.remove(tempPath);
+                    yield fs.remove(templatePath);
                     resolve();
                 }
                 spinner.color = 'green';

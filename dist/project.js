@@ -229,7 +229,7 @@ var Project = function (_Creator) {
             _this2.conf = Object.assign(_this2.conf, answers);
             _this2.fetchTemplates(_this2.conf.template, _this2.conf.projectName).then(function () {
               if (['mini-programme', 'vue-plugin'].includes(_this2.conf.template)) {
-                (0, _init2.default)(creator, _this2.conf);
+                (0, _init2.default)(_this2, _this2.conf);
                 return;
               }
               // 判断是否是手机环境的 
@@ -338,10 +338,10 @@ var Project = function (_Creator) {
       var url = "122687220/web-template";
       // }
       if (template === 'mini-programme') {
-        url = 'direct:http://gitlab.zoomlion.com/po_web/miniprograms-template.git#dev';
+        url = '122687220/web-template#mini-programme';
       }
       if (template === 'vue-plugin') {
-        url = 'direct:http://gitlab.zoomlion.com/po_web/vue-plugin-template.git';
+        url = '122687220/web-template#vue-plugin';
       }
 
       var filePath = this.templatePath(projectName);
@@ -387,7 +387,7 @@ var Project = function (_Creator) {
         this.askInstallUI(conf.template, prompts);
       }
       if (conf.gitPush) {
-        this.askGitAddress(prompts);
+        this.askGitAddress(conf, prompts);
       }
       return _inquirer2.default.prompt(prompts);
     }

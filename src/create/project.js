@@ -190,7 +190,7 @@ export default class Project extends Creator {
           this.fetchTemplates(this.conf.template, this.conf.projectName)
             .then(() => {
               if (['mini-programme', 'vue-plugin'].includes(this.conf.template)) {
-                createApp(creator, this.conf);
+                createApp(this, this.conf);
                 return
               }
               // 判断是否是手机环境的 
@@ -327,10 +327,10 @@ export default class Project extends Creator {
     let url = "122687220/web-template";
     // }
     if (template === 'mini-programme') {
-      url = 'direct:http://gitlab.zoomlion.com/po_web/miniprograms-template.git#dev'
+      url = '122687220/web-template#mini-programme'
     }
     if (template === 'vue-plugin') {
-      url = 'direct:http://gitlab.zoomlion.com/po_web/vue-plugin-template.git'
+      url = '122687220/web-template#vue-plugin'
     }
     
     const filePath = this.templatePath(projectName);
@@ -367,7 +367,7 @@ export default class Project extends Creator {
       this.askInstallUI(conf.template, prompts);
     }
     if (conf.gitPush) {
-      this.askGitAddress(prompts);
+      this.askGitAddress(conf, prompts);
     }
     return inquirer.prompt(prompts);
   }
