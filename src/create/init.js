@@ -31,6 +31,24 @@ export default function createApp (
       console.log(`${chalk.green('✔ ')}${chalk.grey(`创建项目: ${chalk.grey.bold(projectName)}`)}`)
       console.log()
       
+      // git init
+      const gitInit = () => {
+        const gitInitSpinner = ora(`正在执行git init 初始化...`).start()
+        process.chdir(projectPath)
+        try {
+          const res = shell.exec('git init')
+          if (res.code !== 0) {
+            gitInitSpinner.color = 'red'
+            gitInitSpinner.fail(chalk.red('git init初始化失败'))
+          } else {
+            gitInitSpinner.color = 'green'
+            gitInitSpinner.succeed('git init初始化成功')
+          }
+        } catch (error) {
+          gitInitSpinner.color = 'red'
+          gitInitSpinner.fail(chalk.red('git init初始化失败'))
+        }
+      }
       // 执行成功之后的提示语
       const callSuccess = () => {
         console.log(chalk.green(`创建项目 ${chalk.green.bold(projectName)} 成功！`))
@@ -48,7 +66,7 @@ export default function createApp (
         const gitSpinner = ora(`正在上传Git仓库, 需要一会儿...`).start()
         process.chdir(projectPath)
         try {
-          shell.exec('git init')
+          // shell.exec('git init')
           shell.exec('git add .')
           shell.exec('git commit -m "first commit"')
           shell.exec(`git remote add origin ${gitAddress}`)
@@ -104,7 +122,8 @@ export default function createApp (
           return false
         }
       }
-  
+      
+      gitInit()
       // 自动安装依赖的时候 切换包的npm地址，并进行安装
       if (autoInstall) {
         // if (template === 'PC端' || template === '移动端-门户开发' || installUI) {
