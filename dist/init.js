@@ -51,6 +51,24 @@ function createApp(creater, params, cb) {
     console.log('' + _chalk2.default.green('✔ ') + _chalk2.default.grey('\u521B\u5EFA\u9879\u76EE: ' + _chalk2.default.grey.bold(projectName)));
     console.log();
 
+    // git init
+    var gitInit = function gitInit() {
+      var gitInitSpinner = (0, _ora2.default)('\u6B63\u5728\u6267\u884Cgit init \u521D\u59CB\u5316...').start();
+      process.chdir(projectPath);
+      try {
+        var res = _shelljs2.default.exec('git init');
+        if (res.code !== 0) {
+          gitInitSpinner.color = 'red';
+          gitInitSpinner.fail(_chalk2.default.red('git init初始化失败'));
+        } else {
+          gitInitSpinner.color = 'green';
+          gitInitSpinner.succeed('git init初始化成功');
+        }
+      } catch (error) {
+        gitInitSpinner.color = 'red';
+        gitInitSpinner.fail(_chalk2.default.red('git init初始化失败'));
+      }
+    };
     // 执行成功之后的提示语
     var callSuccess = function callSuccess() {
       console.log(_chalk2.default.green('\u521B\u5EFA\u9879\u76EE ' + _chalk2.default.green.bold(projectName) + ' \u6210\u529F\uFF01'));
@@ -68,7 +86,7 @@ function createApp(creater, params, cb) {
       var gitSpinner = (0, _ora2.default)('\u6B63\u5728\u4E0A\u4F20Git\u4ED3\u5E93, \u9700\u8981\u4E00\u4F1A\u513F...').start();
       process.chdir(projectPath);
       try {
-        _shelljs2.default.exec('git init');
+        // shell.exec('git init')
         _shelljs2.default.exec('git add .');
         _shelljs2.default.exec('git commit -m "first commit"');
         _shelljs2.default.exec('git remote add origin ' + gitAddress);
@@ -125,6 +143,7 @@ function createApp(creater, params, cb) {
       }
     };
 
+    gitInit();
     // 自动安装依赖的时候 切换包的npm地址，并进行安装
     if (autoInstall) {
       // if (template === 'PC端' || template === '移动端-门户开发' || installUI) {
