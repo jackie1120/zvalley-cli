@@ -138,7 +138,7 @@ export default class Project extends Creator {
     // 询问用户是否安装自己的UI库
     this.askInstallUI = function(template, prompts) {
       const message =
-        template === "default" ? "是否安装element-ui ？" : "是否安装vant-ui ？";
+        template === "default" ? "是否安装element-ui ？" : "是否安装zv-ui ？";
       prompts.push({
         type: "confirm",
         name: "installUI",
@@ -212,11 +212,15 @@ export default class Project extends Creator {
                 );
               }
 
-              // 注入手机上的一些兼用性解决方案
+              // 注入手机上的一些兼用性解决方案,添加页面缓存
               if (isMobile) {
                 this.copyTemplate(
                   "templates/mobile/solution.js",
                   `${this.conf.projectName}/src/utils/solution.js`
+                );
+                this.copyTemplate(
+                  "templates/mobile/vue-page-stack.js",
+                  `${this.conf.projectName}/src/plugins/vue-page-stack.js`
                 );
               }
 
@@ -236,8 +240,8 @@ export default class Project extends Creator {
                     `${this.conf.projectName}/babel.config.js`
                   );
                   this.copyTemplate(
-                    "templates/mobile/vant_ui.js",
-                    `${this.conf.projectName}/src/plugins/vant-ui.js`
+                    "templates/mobile/zv-ui.js",
+                    `${this.conf.projectName}/src/plugins/zv-ui.js`
                   );
                 } else {
                   this.copyTemplate(
@@ -245,8 +249,8 @@ export default class Project extends Creator {
                     `${this.conf.projectName}/babel.config.js`
                   );
                   this.copyTemplate(
-                    "templates/pc/element_ui.js",
-                    `${this.conf.projectName}/src/plugins/element_ui.js`
+                    "templates/pc/element-ui.js",
+                    `${this.conf.projectName}/src/plugins/element-ui.js`
                   );
                 }
               }
@@ -278,6 +282,13 @@ export default class Project extends Creator {
                     isMobile,
                     isHybrid,
                     lang: this.conf.lang
+                  }
+                },
+                {
+                  from: `${this.conf.projectName}/src/App.vue`,
+                  to: `${this.conf.projectName}/src/App.vue`,
+                  data: {
+                    isMobile
                   }
                 },
                 {

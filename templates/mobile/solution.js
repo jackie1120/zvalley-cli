@@ -10,15 +10,12 @@ const userAgent = navigator.userAgent.toLowerCase()
  */
 //判断是否微信浏览器
 if (userAgent.indexOf('micromessenger') > -1) {
-  ;
-  /iphone|ipod|ipad/i.test(navigator.appVersion) &&
+  ;/iphone|ipod|ipad/i.test(navigator.appVersion) &&
     document.addEventListener(
       'blur',
       e => {
         // 这里加了个类型判断，因为a等元素也会触发blur事件
-        ;
-        ['input', 'textarea'].includes(e.target.localName) &&
-          document.body.scrollIntoView(false)
+        ;['input', 'textarea'].includes(e.target.localName) && document.body.scrollIntoView(false)
       },
       true
     )
@@ -30,8 +27,8 @@ if (userAgent.indexOf('micromessenger') > -1) {
  */
 //判断是否Safari浏览器
 if (userAgent.indexOf('safari') > -1) {
-  window.onload = function () {
-    document.addEventListener('touchstart', function (event) {
+  window.onload = function() {
+    document.addEventListener('touchstart', function(event) {
       if (event.touches.length > 1) {
         event.preventDefault()
       }
@@ -39,7 +36,7 @@ if (userAgent.indexOf('safari') > -1) {
     var lastTouchEnd = 0
     document.addEventListener(
       'touchend',
-      function (event) {
+      function(event) {
         var now = new Date().getTime()
         if (now - lastTouchEnd <= 300) {
           event.preventDefault()
@@ -48,7 +45,7 @@ if (userAgent.indexOf('safari') > -1) {
       },
       false
     )
-    document.addEventListener('gesturestart', function (event) {
+    document.addEventListener('gesturestart', function(event) {
       event.preventDefault()
     })
   }

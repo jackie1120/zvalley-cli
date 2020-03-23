@@ -173,7 +173,7 @@ var Project = function (_Creator) {
     };
     // 询问用户是否安装自己的UI库
     _this.askInstallUI = function (template, prompts) {
-      var message = template === "default" ? "是否安装element-ui ？" : "是否安装vant-ui ？";
+      var message = template === "default" ? "是否安装element-ui ？" : "是否安装zv-ui ？";
       prompts.push({
         type: "confirm",
         name: "installUI",
@@ -245,9 +245,10 @@ var Project = function (_Creator) {
                 _this2.copyTemplate("templates/themeColorReplace", _this2.conf.projectName + "/src/utils");
               }
 
-              // 注入手机上的一些兼用性解决方案
+              // 注入手机上的一些兼用性解决方案,添加页面缓存
               if (isMobile) {
                 _this2.copyTemplate("templates/mobile/solution.js", _this2.conf.projectName + "/src/utils/solution.js");
+                _this2.copyTemplate("templates/mobile/vue-page-stack.js", _this2.conf.projectName + "/src/plugins/vue-page-stack.js");
               }
 
               // 注入原生包
@@ -259,10 +260,10 @@ var Project = function (_Creator) {
               if (_this2.conf.installUI) {
                 if (_this2.conf.template !== "default") {
                   _this2.copyTemplate("templates/mobile/babel.config.js", _this2.conf.projectName + "/babel.config.js");
-                  _this2.copyTemplate("templates/mobile/vant_ui.js", _this2.conf.projectName + "/src/plugins/vant-ui.js");
+                  _this2.copyTemplate("templates/mobile/zv-ui.js", _this2.conf.projectName + "/src/plugins/zv-ui.js");
                 } else {
                   _this2.copyTemplate("templates/pc/babel.config.js", _this2.conf.projectName + "/babel.config.js");
-                  _this2.copyTemplate("templates/pc/element_ui.js", _this2.conf.projectName + "/src/plugins/element_ui.js");
+                  _this2.copyTemplate("templates/pc/element-ui.js", _this2.conf.projectName + "/src/plugins/element-ui.js");
                 }
               }
 
@@ -290,6 +291,12 @@ var Project = function (_Creator) {
                   isMobile: isMobile,
                   isHybrid: isHybrid,
                   lang: _this2.conf.lang
+                }
+              }, {
+                from: _this2.conf.projectName + "/src/App.vue",
+                to: _this2.conf.projectName + "/src/App.vue",
+                data: {
+                  isMobile: isMobile
                 }
               }, {
                 from: _this2.conf.projectName + "/postcss.config.js",
