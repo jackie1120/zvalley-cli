@@ -170,6 +170,8 @@ export default function createApp (
               }
           })
         }
+      } else {
+        callSuccess()
       }
     })
   }
