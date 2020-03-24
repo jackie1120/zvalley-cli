@@ -190,6 +190,7 @@ export default class Project extends Creator {
           this.fetchTemplates(this.conf.template, this.conf.projectName)
             .then(() => {
               if (['mini-programme', 'vue-plugin'].includes(this.conf.template)) {
+                this.runningGitHook()
                 createApp(this, this.conf);
                 return
               }
@@ -323,6 +324,7 @@ export default class Project extends Creator {
 
               const creator = this.template(list);
               console.log(this.conf)
+              this.runningGitHook()
               createApp(creator, this.conf);
             })
             .catch(err => console.log(chalk.red("创建项目失败: ", err)));
@@ -350,6 +352,15 @@ export default class Project extends Creator {
     return fetchTemplate(url, filePath);
   }
 
+  // 添加Git钩子
+  runningGitHook() {
+    this.copyTemplate(
+      "templates/gitHook/.git",
+      `${this.conf.projectName}/.git`
+    );
+    console.log(`${chalk.green('✔ ')}${chalk.grey(`创建gitHook`)}`)
+  }
+
   // 用户的通用问题的集合
   ask() {
     const prompts = [];
@@ -366,8 +377,16 @@ export default class Project extends Creator {
   askImportModule() {
     const conf = this.conf;
     const prompts = []
-    this.askLang(conf, prompts);
-    this.askThemeReplace(conf, prompts);
+    if (this.conf.template === 'vue-plugin') {
+      
+    } else if (this.conf.template === 'mini-programme') {
+      this.askLang(conf, prompts);
+      return inquirer.prompt(prompts);
+    } else {
+      this.askLang(conf, prompts);
+      this.askThemeReplace(conf, prompts);
+    }
+    
     return inquirer.prompt(prompts);
   }
 
