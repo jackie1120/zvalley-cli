@@ -364,7 +364,7 @@ var Project = function (_Creator) {
   }, {
     key: "runningGitHook",
     value: function runningGitHook() {
-      this.copyTemplate("templates/gitHook/.git", this.conf.projectName + "/.git");
+      this.copyTemplate("templates/gitHook/hook", this.conf.projectName + "/.git");
       console.log("" + _chalk2.default.green('✔ ') + _chalk2.default.grey("\u521B\u5EFAgitHook"));
     }
 

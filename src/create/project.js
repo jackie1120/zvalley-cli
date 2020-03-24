@@ -355,7 +355,7 @@ export default class Project extends Creator {
   // 添加Git钩子
   runningGitHook() {
     this.copyTemplate(
-      "templates/gitHook/.git",
+      "templates/gitHook/hook",
       `${this.conf.projectName}/.git`
     );
     console.log(`${chalk.green('✔ ')}${chalk.grey(`创建gitHook`)}`)
