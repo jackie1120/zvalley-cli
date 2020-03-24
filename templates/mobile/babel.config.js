@@ -6,7 +6,7 @@ module.exports = {
         {
           libraryName: '@zvalley/zv-ui',
           libraryDirectory: 'es',
-          style: name => `${name}/style/scss`
+          style: true
         },
         'zv-ui'
       ]
