@@ -63,6 +63,25 @@ function createApp(creater, params, cb) {
       }
     };
 
+    // git init
+    var gitInit = function gitInit() {
+      var gitInitSpinner = (0, _ora2.default)('\u2693 git init...').start();
+      process.chdir(projectPath);
+      try {
+        var res = _shelljs2.default.exec('git init');
+        if (res.code !== 0) {
+          gitInitSpinner.color = 'red';
+          gitInitSpinner.fail(_chalk2.default.red('git init初始化失败'));
+        } else {
+          gitInitSpinner.color = 'green';
+          gitInitSpinner.succeed('git init初始化成功');
+        }
+      } catch (error) {
+        gitInitSpinner.color = 'red';
+        gitInitSpinner.fail(_chalk2.default.red('git init初始化失败'));
+      }
+    };
+
     // 自动关联git仓库执行成功之后的提示语
     var gitPushFunc = function gitPushFunc() {
       var gitSpinner = (0, _ora2.default)('\u6B63\u5728\u4E0A\u4F20Git\u4ED3\u5E93, \u9700\u8981\u4E00\u4F1A\u513F...').start();
@@ -124,6 +143,9 @@ function createApp(creater, params, cb) {
         return false;
       }
     };
+
+    // 初始化git
+    gitInit();
 
     // 自动安装依赖的时候 切换包的npm地址，并进行安装
     if (autoInstall) {
@@ -190,6 +212,8 @@ function createApp(creater, params, cb) {
           }
         });
       }
+    } else {
+      callSuccess();
     }
   });
 }
