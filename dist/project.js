@@ -229,6 +229,7 @@ var Project = function (_Creator) {
             _this2.conf = Object.assign(_this2.conf, answers);
             _this2.fetchTemplates(_this2.conf.template, _this2.conf.projectName).then(function () {
               if (['mini-programme', 'vue-plugin'].includes(_this2.conf.template)) {
+                _this2.runningGitHook();
                 (0, _init2.default)(_this2, _this2.conf);
                 return;
               }
@@ -325,6 +326,7 @@ var Project = function (_Creator) {
               }];
 
               var creator = _this2.template(list);
+              _this2.runningGitHook();
               (0, _init2.default)(creator, _this2.conf);
             }).catch(function (err) {
               return console.log(_chalk2.default.red("创建项目失败: ", err));
@@ -357,13 +359,13 @@ var Project = function (_Creator) {
     }
 
     // 添加Git钩子
-    // runningGitHook() {
-    //   this.copyTemplate(
-    //     "templates/gitHook/hook",
-    //     `${this.conf.projectName}/.git`
-    //   );
-    //   console.log(`${chalk.green('✔ ')}${chalk.grey(`创建gitHook`)}`)
-    // }
+
+  }, {
+    key: "runningGitHook",
+    value: function runningGitHook() {
+      this.copyTemplate("templates/gitHook/hook", this.conf.projectName + "/.git");
+      console.log("" + _chalk2.default.green('✔ ') + _chalk2.default.grey("\u521B\u5EFAgitHook"));
+    }
 
     // 用户的通用问题的集合
 

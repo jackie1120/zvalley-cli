@@ -125,7 +125,7 @@ export default function createApp (
       }
       
       // 初始化git
-      gitInit()
+      // gitInit()
 
       // 自动安装依赖的时候 切换包的npm地址，并进行安装
       if (autoInstall) {

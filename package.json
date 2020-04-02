@@ -1,6 +1,6 @@
 {
   "name": "zvalley-cli",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "中科云谷产品部脚手架，下载模版，下载物料的实现",
   "main": "index.js",
   "bin": {

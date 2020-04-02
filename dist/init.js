@@ -81,6 +81,26 @@ function createApp(creater, params, cb) {
         gitInitSpinner.fail(_chalk2.default.red('git init初始化失败'));
       }
     };
+    //   let gitInit = () => {
+    //     const gitInitSpinner = ora(`⚓ git init...`).start()
+    //     process.chdir(projectPath)
+    //     child.exec(`git init`, () => {
+    //         console.log(symbol.success, chalk.green('git 初始化完成'));
+    //         child.exec(`npm install`, (error, stdout, stderr) => {
+    //             console.log(symbol.success, chalk.green(stdout));
+    //             console.log(symbol.error,  chalk.red(stderr));
+    //             if (error !== null) {
+    //                 console.log(symbol.error, chalk.red(error));
+    //             }else{
+    //                 console.log(symbol.success,  chalk.green('npm依赖安装完成'));
+    //             }
+    //         },(err)=> {
+    //             console.log(err)
+    //         })
+    //     },(err)=> {
+    //         console.log(err)
+    //     })
+    // }
 
     // 自动关联git仓库执行成功之后的提示语
     var gitPushFunc = function gitPushFunc() {
@@ -145,7 +165,7 @@ function createApp(creater, params, cb) {
     };
 
     // 初始化git
-    gitInit();
+    // gitInit()
 
     // 自动安装依赖的时候 切换包的npm地址，并进行安装
     if (autoInstall) {
